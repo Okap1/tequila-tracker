@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Tequila Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #fefefe 0%, #f8f9fa 50%, #ffffff 100%);
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.95) 100%);
+            border-radius: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(218, 165, 32, 0.1), 
+                        0 0 0 1px rgba(218, 165, 32, 0.08);
+            border: 2px solid rgba(218, 165, 32, 0.15);
+        }
+        
+        h1 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #d4af37, #b8860b, #daa520);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            font-weight: 200;
+            letter-spacing: 3px;
+            text-shadow: none;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            color: #6b7280;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+        
+        .last-updated {
+            font-size: 0.95rem;
+            color: #9ca3af;
+            margin-top: 1.5rem;
+            font-weight: 300;
+        }
+        
+        .market-section {
+            margin-bottom: 5rem;
+        }
+        
+        .section-title {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            font-weight: 200;
+            letter-spacing: 2px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(218, 165, 32, 0.5), transparent);
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        }
+        
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .brand-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.98) 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(218, 165, 32, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(218, 165, 32, 0.08), 
+                        0 4px 12px rgba(0,0,0,0.02);
+        }
+        
+        .brand-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(218, 165, 32, 0.05), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .brand-card:hover::before {
+            left: 100%;
+        }
+        
+        .brand-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(218, 165, 32, 0.3);
+            box-shadow: 0 25px 60px rgba(218, 165, 32, 0.15), 
+                        0 10px 30px rgba(0,0,0,0.05);
+        }
+        
+        .brand-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .rank-badge {
+            background: linear-gradient(135deg, #d4af37, #b8860b, #daa520);
+            color: #ffffff;
+            padding: 0.7rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-right: 1.5rem;
+            font-size: 0.95rem;
+            min-width: 45px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        .brand-name {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .products-title {
+            font-size: 1.3rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .product-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(248,250,252,0.9) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(218, 165, 32, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        
+        .product-card:hover {
+            background: linear-gradient(135deg, rgba(248,250,252,0.95) 0%, rgba(255,255,255,0.98) 100%);
+            border-color: rgba(218, 165, 32, 0.25);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(218, 165, 32, 0.12);
+        }
+        
+        .product-image {
+            width: 90px;
+            height: 130px;
+            margin: 0 auto 1rem;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .bottle {
+            position: relative;
+            width: 35px;
+            height: 90px;
+            background: linear-gradient(135deg, 
+                rgba(255,255,255,0.9) 0%, 
+                rgba(240,248,255,0.8) 30%, 
+                rgba(255,255,255,0.95) 70%, 
+                rgba(248,250,252,0.9) 100%);
+            border-radius: 4px 4px 2px 2px;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 
+                inset 2px 0 4px rgba(255,255,255,0.8),
+                inset -2px 0 4px rgba(0,0,0,0.05),
+                0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .bottle::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 8px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 2px 2px 0 0;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        
+        .bottle::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 4px;
+            background: #2c3e50;
+            border-radius: 1px 1px 0 0;
+        }
+        
+        .bottle-gold {
+            background: linear-gradient(135deg, 
+                #ffd700 0%, 
+                #ffed4e 30%, 
+                #fbbf24 70%, 
+                #d97706 100%);
+        }
+        
+        .bottle-clear {
+            background: linear-gradient(135deg, 
+                rgba(255,255,255,0.95) 0%, 
+                rgba(248,250,252,0.9) 30%, 
+                rgba(255,255,255,0.98) 70%, 
+                rgba(240,248,255,0.9) 100%);
+        }
+        
+        .bottle-amber {
+            background: linear-gradient(135deg, 
+                #d97706 0%, 
+                #f59e0b 30%, 
+                #fbbf24 70%, 
+                #92400e 100%);
+        }
+        
+        .bottle-dark {
+            background: linear-gradient(135deg, 
+                #374151 0%, 
+                #4b5563 30%, 
+                #6b7280 70%, 
+                #1f2937 100%);
+        }
+        
+        .bottle-premium {
+            background: linear-gradient(135deg, 
+                #1f2937 0%, 
+                #374151 20%, 
+                #4b5563 50%, 
+                #6b7280 80%, 
+                #374151 100%);
+            width: 32px;
+            height: 95px;
+            border-radius: 2px;
+        }
+        
+        .bottle-premium::before {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            width: 14px;
+            height: 10px;
+            top: -10px;
+        }
+        
+        .bottle-tall {
+            height: 100px;
+            width: 30px;
+        }
+        
+        .bottle-wide {
+            width: 40px;
+            height: 85px;
+            border-radius: 6px 6px 3px 3px;
+        }
+        
+        .label {
+            position: absolute;
+            top: 25px;
+            left: 2px;
+            right: 2px;
+            height: 35px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .label-gold {
+            background: linear-gradient(135deg, #d4af37, #ffd700);
+            color: #1a1a1a;
+        }
+        
+        .label-black {
+            background: #1a1a1a;
+            color: #d4af37;
+        }
+        
+        .label-silver {
+            background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
+            color: #374151;
+        }
+        
+        .product-name {
+            font-size: 1rem;
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .product-type {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+        
+        .market-stats {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.95) 100%);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            text-align: center;
+            border: 1px solid rgba(218, 165, 32, 0.15);
+            box-shadow: 0 15px 40px rgba(218, 165, 32, 0.08), 
+                        0 6px 20px rgba(0,0,0,0.02);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, rgba(248,250,252,0.8) 0%, rgba(255,255,255,0.9) 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(218, 165, 32, 0.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(218, 165, 32, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 300;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #9ca3af;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(218, 165, 32, 0.15);
+            margin-top: 5rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(248,250,252,0.8) 100%);
+            border-radius: 20px;
+            font-weight: 300;
+        }
+        
+        @media (max-width: 768px) {
+            .brands-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Premium Tequila Tracker</h1>
+            <p class="subtitle">Top-Selling Tequila Brands & Their Finest Expressions</p>
+            <p class="last-updated">Updated: September 2024</p>
+        </header>
+
+        <div class="market-stats">
+            <h2 style="background: linear-gradient(135deg, #d4af37, #b8860b); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1.5rem; font-weight: 300; letter-spacing: 1px;">Market Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">30M+</div>
+                    <div class="stat-label">Cases Sold (US)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">$6.5B</div>
+                    <div class="stat-label">Global Value</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">+7.9%</div>
+                    <div class="stat-label">Annual Growth</div>
+                </div>
+            </div>
+        </div>
+
+        <section class="market-section">
+            <h2 class="section-title">Top 5 US Market Leaders</h2>
+            <div class="brands-grid">
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#1</div>
+                        <div class="brand-name">Jose Cuervo</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-gold">
+                                    <div class="label label-gold">CUERVO</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Especial Gold</div>
+                            <div class="product-type">Mixto</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-tall">
+                                    <div class="label label-silver">TRAD</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Tradicional</div>
+                            <div class="product-type">100% Agave</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-premium">
+                                    <div class="label label-black">RESERVA</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Reserva de la Familia</div>
+                            <div class="product-type">Extra Añejo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#2</div>
+                        <div class="brand-name">1800 Tequila</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-wide">
+                                    <div class="label label-gold">1800</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Silver</div>
+                            <div class="product-type">Blanco</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-amber">
+                                    <div class="label label-black">1800</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Reposado</div>
+                            <div class="product-type">Aged</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-dark">
+                                    <div class="label label-gold">1800</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Añejo</div>
+                            <div class="product-type">Extra Aged</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#3</div>
+                        <div class="brand-name">Casamigos</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-premium">
+                                    <div class="label label-black">CASA</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Blanco</div>
+                            <div class="product-type">Silver</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-amber bottle-premium">
+                                    <div class="label label-gold">CASA</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Reposado</div>
+                            <div class="product-type">Aged</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-dark bottle-premium">
+                                    <div class="label label-gold">CASA</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Añejo</div>
+                            <div class="product-type">Extra Aged</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#4</div>
+                        <div class="brand-name">Don Julio</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-tall">
+                                    <div class="label label-silver">DON J</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Blanco</div>
+                            <div class="product-type">Silver</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-premium bottle-dark">
+                                    <div class="label label-gold">1942</div>
+                                </div>
+                            </div>
+                            <div class="product-name">1942</div>
+                            <div class="product-type">Añejo</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-premium bottle-dark">
+                                    <div class="label label-gold">REAL</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Real</div>
+                            <div class="product-type">Extra Añejo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#5</div>
+                        <div class="brand-name">Patrón</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-wide">
+                                    <div class="label label-black">PATRÓN</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Silver</div>
+                            <div class="product-type">Blanco</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-amber bottle-wide">
+                                    <div class="label label-black">PATRÓN</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Reposado</div>
+                            <div class="product-type">Aged</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-dark bottle-wide">
+                                    <div class="label label-gold">PATRÓN</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Añejo</div>
+                            <div class="product-type">Extra Aged</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="market-section">
+            <h2 class="section-title">Top 5 Global Market Leaders</h2>
+            <div class="brands-grid">
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#1</div>
+                        <div class="brand-name">Jose Cuervo</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear">
+                                    <div class="label label-gold">CUERVO</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Especial Silver</div>
+                            <div class="product-type">Mixto</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-tall">
+                                    <div class="label label-silver">TRAD</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Traditional Silver</div>
+                            <div class="product-type">100% Agave</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-premium">
+                                    <div class="label label-black">PLATINO</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Platino</div>
+                            <div class="product-type">Premium</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#2</div>
+                        <div class="brand-name">Sauza</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-tall">
+                                    <div class="label label-black">BLUE</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Blue Silver</div>
+                            <div class="product-type">100% Agave</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-gold">
+                                    <div class="label label-black">SAUZA</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Gold</div>
+                            <div class="product-type">Mixto</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-wide">
+                                    <div class="label label-gold">HORN</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Hornitos</div>
+                            <div class="product-type">100% Agave</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#3</div>
+                        <div class="brand-name">Olmeca</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-wide">
+                                    <div class="label label-black">OLMECA</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Blanco</div>
+                            <div class="product-type">Silver</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-tall">
+                                    <div class="label label-gold">ALTOS</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Altos Plata</div>
+                            <div class="product-type">100% Agave</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-amber bottle-tall">
+                                    <div class="label label-black">ALTOS</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Altos Reposado</div>
+                            <div class="product-type">Aged</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#4</div>
+                        <div class="brand-name">1800 Tequila</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-wide">
+                                    <div class="label label-gold">1800</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Silver</div>
+                            <div class="product-type">Blanco</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-wide">
+                                    <div class="label label-black">COCO</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Coconut</div>
+                            <div class="product-type">Flavored</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear bottle-premium">
+                                    <div class="label label-gold">CRIST</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Cristalino</div>
+                            <div class="product-type">Premium</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-card">
+                    <div class="brand-header">
+                        <div class="rank-badge">#5</div>
+                        <div class="brand-name">El Jimador</div>
+                    </div>
+                    <div class="products-title">Top Products</div>
+                    <div class="products-grid">
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-clear">
+                                    <div class="label label-silver">JIMADOR</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Blanco</div>
+                            <div class="product-type">Silver</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-amber">
+                                    <div class="label label-black">JIMADOR</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Reposado</div>
+                            <div class="product-type">Aged</div>
+                        </div>
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="bottle bottle-dark">
+                                    <div class="label label-gold">JIMADOR</div>
+                                </div>
+                            </div>
+                            <div class="product-name">Añejo</div>
+                            <div class="product-type">Extra Aged</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Data compiled from industry reports and market analysis • Premium Tequila Tracker © 2024</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">Market data reflects volume sales and brand popularity as of September 2024</p>
+        </footer>
+    </div>
+</body>
+</html>
